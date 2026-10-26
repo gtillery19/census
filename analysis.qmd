@@ -2,5 +2,37 @@
 title: "Analyzing US Census Data"
 format: html
 Author: Greta Tillery
+execute:
+  echo: false
 ---
 
+```{r}
+#| message: false
+library(tidyverse)
+library(tidycensus)
+library(sf)
+```
+
+```{r}
+#| message: false
+#| cache: true
+income_tx <- get_acs(
+  geography = "county",
+  state = "TX",
+  variables = "B19013_001",
+  year = 2020,
+  geometry = TRUE
+)
+```
+
+```{r}
+ggplot(income_tx) +
+  geom_sf(aes(fill = estimate)) +
+  labs(
+    title = "Median Household Income by County",
+    fill = "Median household income",
+    caption = "Source: U.S. Census Bureau, 2020 ACS 5-Year Estimates"
+  ) +
+  scale_fill_viridis_c() +
+  theme_void()
+```
