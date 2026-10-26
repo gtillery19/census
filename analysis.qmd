@@ -36,3 +36,37 @@ ggplot(income_tx) +
   scale_fill_viridis_c() +
   theme_void()
 ```
+
+```{r}
+#| message: false
+edu_state <- get_acs(
+  geography = "state",
+  variables = c("B15003_022", "B15003_023", "B15003_024", "B15003_025"),
+  summary_var = "B15003_001",
+  year = 2020
+)
+```
+
+```{r}
+#| fig-height: 12
+edu_state |>
+  group_by(GEOID, NAME) |>
+  summarize(
+    percent_bachelors_plus = sum(estimate) / first(summary_est) * 100,
+    .groups = "drop"
+  ) |>
+  ggplot(aes(
+    x = reorder(NAME, percent_bachelors_plus),
+    y = percent_bachelors_plus
+  )) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Bachelor's Degree or Higher by State",
+    x = NULL,
+    y = "Adults with a bachelor's degree or higher",
+    caption = "Source: U.S. Census Bureau, 2020 ACS 5-Year Estimates"
+  ) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1)) +
+  theme_minimal()
+```
